@@ -8,10 +8,11 @@ scrape_configs:
 
   - job_name: 'proxmox'
     static_configs:
-      - targets: ['<PROXMOX_IP>:<PROXMOX_PORT>']
-    metrics_path: '/api2/json'
+      - targets: ['192.168.217.128:8006']
+    metrics_path: '/api2/json'  # Chemin de l'API
     params:
-      node: ['<NODE_NAME>']
-    bearer_token: '<PROXMOX_TOKEN>'
+      node: ['pve']
+    bearer_token: 'root@pam!adel'
     scheme: https
     insecure_skip_verify: true
+
