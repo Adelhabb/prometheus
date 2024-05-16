@@ -1,14 +1,12 @@
 pipeline {
     agent any
-
     stages {
-        stage('Checkout') {
+        stage('Check Docker Compose') {
             steps {
-                checkout scm // add ur git repo 
+                sh 'docker-compose --version || { echo "Docker Compose n\'est pas installé"; exit 1; }'
             }
         }
-
-        stage('Deploy') {
+        stage('Déployer') {
             steps {
                 sh 'docker-compose up -d'
             }
