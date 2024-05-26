@@ -1,10 +1,5 @@
 pipeline {
     agent any
-environment {
-        PM_API_URL = "https://192.168.217.128:8006/api2/json"
-        PM_USER = "root"
-        PM_PASSWORD = "adminprox"
-             }
 
     stages {
         stage('Checkout') {
