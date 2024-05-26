@@ -17,7 +17,7 @@ services:
     ports:
       - "3000:3000"
 
-       node-exporter:
+  node-exporter:
     image: prom/node-exporter
     ports:
       - "9100:9100"
