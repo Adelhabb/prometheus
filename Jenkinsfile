@@ -5,23 +5,25 @@ pipeline {
         PM_USER = "root"
         PM_PASSWORD = "adminprox"
              }
-stages {
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                checkout scm
+            }
+        }
         stage('Test GitHub Connection') {
             steps {
                 script {
-                    def gitUrl = 'https://github.com/Adelhabb/promethious.git'
-                    // Checkout the GitHub repository using configured credentials
-                    checkout([$class: 'GitSCM',
-                              branches: [[name: '*/main']],
-                              doGenerateSubmoduleConfigurations: false,
-                              extensions: [[$class: 'CloneOption', depth: 1, noTags: false, reference: '', shallow: true]],
-                              userRemoteConfigs: [[url: gitUrl]]])
+                    def gitRepoUrl = 'https://github.com/Adelhabb/prometheus.git'
+                    def gitTestDir = 'test-git-repo'
+                    git(url: gitRepoUrl, branch: 'main', changelog: false, poll: false, dir: gitTestDir)
                     echo "Connection to GitHub repository successful"
                 }
             }
         }
         stage('Deploy') {
             steps {
+                sh 'docker-compose down --remove-orphans'
                 sh 'docker-compose up -d'
             }
         }
