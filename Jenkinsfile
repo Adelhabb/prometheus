@@ -1,30 +1,41 @@
 pipeline {
     agent any
-        environment {
-        PM_API_URL = "https://192.168.217.128:8006/api2/json"
-        PM_USER = "root"
-        PM_PASSWORD = "adminprox"
-             }
+
+    environment {
+        DOCKER_COMPOSE_VERSION = '1.29.2'
+    }
+
     stages {
         stage('Checkout SCM') {
             steps {
-                checkout scm
+                git 'https://github.com/Adelhabb/prometheus.git' // Mettez ici l'URL de votre dépôt
             }
         }
-        stage('Test GitHub Connection') {
+
+        stage('Install Docker Compose') {
             steps {
-                script {
-                    def gitRepoUrl = 'https://github.com/Adelhabb/prometheus.git'
-                    def gitTestDir = 'test-git-repo'
-                    git(url: gitRepoUrl, branch: 'main', changelog: false, poll: false, dir: gitTestDir)
-                    echo "Connection to GitHub repository successful"
-                }
+                sh '''
+                    if ! [ -x "$(command -v docker-compose)" ]; then
+                      curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                      chmod +x /usr/local/bin/docker-compose
+                    fi
+                '''
             }
         }
-        stage('Deploy') {
+
+        stage('Deploy Services') {
             steps {
                 sh 'docker-compose down --remove-orphans'
                 sh 'docker-compose up -d'
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                echo "Cleaning up dangling images"
+                sh 'docker image prune -f'
             }
         }
     }
